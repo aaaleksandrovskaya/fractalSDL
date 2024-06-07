@@ -17,9 +17,10 @@ public:
         destroyWindow();
     };
 
-    int getWidth() { return screen_width; };
-    int getHeight() { return screen_height; };
-    void processWindow();
+    const int getWidth() { return screen_width; };
+    const int getHeight() { return screen_height; };
+    void drawWindow(int w_left_top, int h_left_top, int width, int height);
+    bool processKey();
 
 private:
     int screen_width{};
@@ -29,7 +30,6 @@ private:
 
     void createWindow();
     void destroyWindow();
-    bool processKey();
     void drawPixel(int x, int y, Mandelbrot mand);
 };
 #endif

@@ -18,7 +18,7 @@ public:
     {
         setColorTable();
     }
-    Color mandelbrotPixel(int x, int y);
+    Color mandelbrotColor(int x, int y);
 
 private:
     const int iterLimit{500};

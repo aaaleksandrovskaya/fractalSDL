@@ -27,7 +27,7 @@ void Window::destroyWindow()
     SDL_Quit();
 }
 
-void Window::processWindow() {
+void Window::drawWindow(int w_left_top, int h_left_top, int width, int height) {
     Mandelbrot mand{screen_width, screen_height};
     for(int x{0}; x<screen_width; ++x){
         for(int y{0}; y<screen_height; ++y){
@@ -35,16 +35,11 @@ void Window::processWindow() {
         }
     }
     SDL_RenderPresent(gRenderer);
-    bool quit{false};
-    while (!quit)
-    {
-        quit |= processKey();
-    }
 };
 
 void Window::drawPixel(int x, int y, Mandelbrot mand)
 {
-    auto [r, g, b] = mand.mandelbrotPixel(x, y);
+    auto [r, g, b] = mand.mandelbrotColor(x, y);
     SDL_SetRenderDrawColor(gRenderer, r, g, b, 255);
     SDL_RenderDrawPoint(gRenderer, x, y);
 }

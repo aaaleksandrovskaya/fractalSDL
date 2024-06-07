@@ -12,7 +12,7 @@ int Mandelbrot::mandelbrotValue(std::complex<double> complex)
     return iterLimit;
 }
 
-Mandelbrot::Color Mandelbrot::mandelbrotPixel(int x, int y)
+Mandelbrot::Color Mandelbrot::mandelbrotColor(int x, int y)
 {
     std::complex complex{x_start + x * dx, y_stop - y * dy};
     double colorIdx{(colorTableSize - 1) * mandelbrotValue(complex) / static_cast<double>(iterLimit)};
