@@ -1,6 +1,8 @@
 #ifndef FRACTAL_HPP
 #define FRACTAL_HPP
 #include <complex>
+#include <random>
+#include <chrono>
 
 class Mandelbrot
 {
@@ -14,6 +16,7 @@ public:
     Mandelbrot(int width, int height)
         : width{width}, height{height}, dx{(x_stop - x_start) / (width - 1)}, dy{(y_stop - y_start) / (height - 1)}
     {
+        setColorTable();
     }
     Color mandelbrotPixel(int x, int y);
 
@@ -24,11 +27,15 @@ private:
     const double y_start{-1.0};
     const double y_stop{1.0};
 
+    constexpr static int colorTableSize{20};
+    Color colorTable[colorTableSize]{};
+
     int width{};
     int height{};
     double dx{};
     double dy{};
 
+    void setColorTable();
     int mandelbrotValue(std::complex<double> complex);
 };
 #endif
