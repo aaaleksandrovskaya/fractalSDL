@@ -37,5 +37,7 @@ private:
 
     void setColorTable();
     int mandelbrotValue(std::complex<double> complex);
+
+    friend std::ostream& operator<< (std::ostream& out, const Color& color);
 };
 #endif

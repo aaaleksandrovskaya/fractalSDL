@@ -9,14 +9,14 @@ void Window::createWindow()
     else
     {
         screen_window = SDL_CreateWindow("SDL Tutorial",
-                                  SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                  screen_width, screen_height, SDL_WINDOW_SHOWN);
+                                         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                         screen_width, screen_height, SDL_WINDOW_SHOWN);
         SDL_Surface *screenSurface{SDL_GetWindowSurface(screen_window)};
         SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
         SDL_UpdateWindowSurface(screen_window);
         gRenderer = SDL_CreateRenderer(screen_window, -1, SDL_RENDERER_ACCELERATED);
-        SDL_SetRenderDrawColor( gRenderer, 255, 255, 255, 255 );
-        SDL_RenderClear( gRenderer );
+        SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
+        SDL_RenderClear(gRenderer);
     }
 }
 
@@ -27,21 +27,26 @@ void Window::destroyWindow()
     SDL_Quit();
 }
 
-void Window::drawWindow(int w_left_top, int h_left_top, int width, int height) {
-    Mandelbrot mand{screen_width, screen_height};
-    for(int x{0}; x<screen_width; ++x){
-        for(int y{0}; y<screen_height; ++y){
-            drawPixel(x, y, mand);
+void Window::calculateWindow(Mandelbrot &mand, std::vector<Mandelbrot::Color> &screen, int h_start, int height)
+{
+    for (int y{h_start}; y < (h_start + height); ++y)
+    {
+        for (int x{0}; x < this->screen_width; ++x)
+        {
+            screen.push_back(mand.mandelbrotColor(x, y));
         }
     }
-    SDL_RenderPresent(gRenderer);
 };
 
-void Window::drawPixel(int x, int y, Mandelbrot mand)
+void Window::drawWindow(const std::vector<Mandelbrot::Color> &screen, int h_start, int height)
 {
-    auto [r, g, b] = mand.mandelbrotColor(x, y);
-    SDL_SetRenderDrawColor(gRenderer, r, g, b, 255);
-    SDL_RenderDrawPoint(gRenderer, x, y);
+    for (size_t idx{0}; idx < (this->screen_width * height); ++idx)
+    {
+        auto [r, g, b] = screen.at(idx);
+        SDL_SetRenderDrawColor(gRenderer, r, g, b, 255);
+        SDL_RenderDrawPoint(gRenderer, (idx % this->screen_width), h_start + (idx / this->screen_width));
+    }
+    SDL_RenderPresent(gRenderer);
 }
 
 bool Window::processKey()

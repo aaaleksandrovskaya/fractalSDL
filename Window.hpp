@@ -2,6 +2,7 @@
 #define WINDOW_HPP
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <array>
 #include "Fractal.hpp"
 
 class Window
@@ -19,7 +20,8 @@ public:
 
     const int getWidth() { return screen_width; };
     const int getHeight() { return screen_height; };
-    void drawWindow(int w_left_top, int h_left_top, int width, int height);
+    void calculateWindow(Mandelbrot &mand, std::vector<Mandelbrot::Color> &screen, int h_start, int height);
+    void drawWindow(const std::vector<Mandelbrot::Color> &screen, int h_start, int height);
     bool processKey();
 
 private:
@@ -30,6 +32,5 @@ private:
 
     void createWindow();
     void destroyWindow();
-    void drawPixel(int x, int y, Mandelbrot mand);
 };
 #endif

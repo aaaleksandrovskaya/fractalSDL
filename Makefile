@@ -6,3 +6,7 @@ OBJ_NAME = fractal
 
 all: $(OBJS)
 	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+	
+clean:
+	rm -f $(OBJ_NAME)
+	rm -dfr .vscode

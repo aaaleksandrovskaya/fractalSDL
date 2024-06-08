@@ -34,3 +34,9 @@ void Mandelbrot::setColorTable()
         elem = {randomColor(mt), randomColor(mt), randomColor(mt)};
     }
 }
+
+std::ostream &operator<<(std::ostream &out, const Mandelbrot::Color &color)
+{
+    out << color.red << ' ' << color.green << ' ' << color.blue;
+    return out;
+}
