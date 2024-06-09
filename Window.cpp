@@ -8,7 +8,7 @@ void Window::createWindow()
     }
     else
     {
-        screen_window = SDL_CreateWindow("SDL Tutorial",
+        screen_window = SDL_CreateWindow("Fractal",
                                          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                          screen_width, screen_height, SDL_WINDOW_SHOWN);
         SDL_Surface *screenSurface{SDL_GetWindowSurface(screen_window)};
@@ -33,7 +33,7 @@ void Window::calculateWindow(Mandelbrot &mand, std::vector<Fractal::Color> &scre
     {
         for (int x{0}; x < this->screen_width; ++x)
         {
-            screen.push_back(mand.mandelbrotColor(x, y));
+            screen.push_back(mand.calculateColor(x, y));
         }
     }
 };

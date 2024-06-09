@@ -6,14 +6,10 @@
 class Mandelbrot : public Fractal
 {
 public:
-    Mandelbrot(int width, int height)
-        : Fractal(width, height), dx{(x_stop - x_start) / (width - 1)}, dy{(y_stop - y_start) / (height - 1)} {}
-    Color mandelbrotColor(int x, int y);
+    Mandelbrot(int width, int height, int iterLimit)
+        : Fractal(width, height, iterLimit, -2.0, 1.0, -1.0, 1.0) {}
 
 private:
-    double dx{};
-    double dy{};
-
-    int mandelbrotValue(std::complex<double> complex);
+    int calculateValue(std::complex<double> complex);
 };
 #endif

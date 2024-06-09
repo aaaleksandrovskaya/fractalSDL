@@ -15,7 +15,7 @@ int main()
         Window win{};
         const int winWidth{win.getWidth()};
         const int winHeight{win.getHeight()};
-        Mandelbrot mand{winWidth, winHeight};
+        Mandelbrot mand{winWidth, winHeight, 500};
 
         constexpr int threadNum{8};
         std::thread threads[threadNum];

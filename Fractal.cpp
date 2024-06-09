@@ -16,6 +16,13 @@ void Fractal::setColorTable()
     }
 }
 
+Fractal::Color Fractal::calculateColor(int x, int y)
+{
+    std::complex complex{x_start + x * dx, y_stop - y * dy};
+    double colorIdx{(colorTableSize - 1) * calculateValue(complex) / static_cast<double>(iterLimit)};
+    return colorTable[static_cast<size_t>(colorIdx)];
+}
+
 std::ostream &operator<<(std::ostream &out, const Fractal::Color &color)
 {
     out << color.red << ' ' << color.green << ' ' << color.blue;
