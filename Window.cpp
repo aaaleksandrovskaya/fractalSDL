@@ -7,10 +7,6 @@ void threadFunc(Fractal &fractal, Window &win, std::vector<Fractal::Color> &vec,
 
 void runDrawThreads(Fractal &fractal, Window &win, std::array<std::vector<Fractal::Color>, Window::threadNum> &vec, const int width, const int height)
 {
-    /*Fractal *fractal{nullptr};
-    Mandelbrot mand{width, height, 500};
-    Julia fractal{width, height, 50};*/
-
     std::thread threads[Window::threadNum];
     int threadVecSize{static_cast<int>(std::ceil(static_cast<double>(height) / Window::threadNum))};
 
@@ -108,26 +104,51 @@ bool Window::processKey()
                 break;
 
             case SDLK_LEFT:
-            {
-                std::cout << "Julia fractal\n";
-                Julia fractal{screen_width, screen_height, 50};
-                runDrawThreads(fractal, std::ref(*this), std::ref(vec), screen_width, screen_height);
+                runDrawThreads(*getCurrentFractal(SDLK_LEFT), std::ref(*this), std::ref(vec), screen_width, screen_height);
                 break;
-            }
 
             case SDLK_RIGHT:
-            {
-                std::cout << "Mandelbrot fractal\n";
-                Mandelbrot fractal{screen_width, screen_height, 500};
-                runDrawThreads(fractal, std::ref(*this), std::ref(vec), screen_width, screen_height);
+                runDrawThreads(*getCurrentFractal(SDLK_RIGHT), std::ref(*this), std::ref(vec), screen_width, screen_height);
                 break;
-            }
 
             default:
-                std::cout << "Another button\n";
                 break;
             }
         }
         return false;
     }
+}
+
+Fractal *Window::getCurrentFractal(SDL_Keycode key)
+{
+    switch (key)
+    {
+    case SDLK_LEFT:
+        if (currentFractal == MandelbrotNumber)
+            currentFractal = static_cast<fractalNum>(LastNumber - 1);
+        else
+            currentFractal = static_cast<fractalNum>(currentFractal - 1);
+        break;
+    case SDLK_RIGHT:
+        if (currentFractal == static_cast<fractalNum>(LastNumber - 1))
+            currentFractal = MandelbrotNumber;
+        else
+            currentFractal = static_cast<fractalNum>(currentFractal + 1);
+        break;
+    }
+
+    Fractal* ptr{nullptr};
+    switch (currentFractal)
+    {
+    case MandelbrotNumber:
+        ptr = new Mandelbrot{screen_width, screen_height};
+        break;
+    case JuliaNumber:
+        ptr = new Julia{screen_width, screen_height};
+        break;
+    case LastNumber:
+        ptr = new Mandelbrot{screen_width, screen_height};
+        break;
+    }
+    return ptr;
 }

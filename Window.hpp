@@ -30,18 +30,19 @@ public:
     static constexpr int threadNum{8};
 
 private:
-    int screen_width{};
-    int screen_height{};
-    SDL_Window *screen_window{};
-    SDL_Renderer *gRenderer{};
-    int currentFractal{MandelbrotNumber};
-
     enum fractalNum
     {
         MandelbrotNumber,
         JuliaNumber,
         LastNumber
     };
+
+    int screen_width{};
+    int screen_height{};
+    SDL_Window *screen_window{};
+    SDL_Renderer *gRenderer{};
+    fractalNum currentFractal{MandelbrotNumber};
+    Fractal* getCurrentFractal(SDL_Keycode key);
 
     void createWindow();
     void destroyWindow();

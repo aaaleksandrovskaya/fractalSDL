@@ -7,7 +7,7 @@ int Julia::calculateValue(std::complex<double> complex)
     {
         if (abs(z) > 4.0)
             return i;
-        z = z * z * z * z * z + complexConst;
+        z = z * z + complexConst;
     }
     return iterLimit;
 }
