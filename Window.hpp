@@ -5,6 +5,7 @@
 #include <array>
 #include "Fractal.hpp"
 #include "Mandelbrot.hpp"
+#include "Julia.hpp"
 
 class Window
 {
@@ -21,7 +22,7 @@ public:
 
     const int getWidth() { return screen_width; };
     const int getHeight() { return screen_height; };
-    void calculateWindow(Mandelbrot &mand, std::vector<Fractal::Color> &screen, int h_start, int height);
+    void calculateWindow(Fractal &fractal, std::vector<Fractal::Color> &screen, int h_start, int height);
     void drawWindow(const std::vector<Fractal::Color> &screen, int h_start, int height);
     bool processKey();
 
@@ -30,6 +31,13 @@ private:
     int screen_height{};
     SDL_Window *screen_window{};
     SDL_Renderer *gRenderer{};
+    int currentFractal{MandelbrotNumber};
+
+    enum fractalNum
+    {
+        MandelbrotNumber,
+        JuliaNumber
+    };
 
     void createWindow();
     void destroyWindow();

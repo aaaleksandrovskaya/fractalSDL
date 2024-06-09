@@ -3,9 +3,34 @@
 #include <algorithm>
 #include "Window.hpp"
 
-void threadFunc(Mandelbrot &mand, Window &win, std::vector<Fractal::Color> &vec, int h_start, int height)
+constexpr int threadNum{8};
+void threadFunc(Fractal &fractal, Window &win, std::vector<Fractal::Color> &vec, int h_start, int height)
 {
-    win.calculateWindow(mand, vec, h_start, height);
+    win.calculateWindow(fractal, vec, h_start, height);
+}
+
+void runDrawThreads(Fractal &fractal, Window &win, std::array<std::vector<Fractal::Color>, threadNum> &vec, const int width, const int height)
+{
+    std::thread threads[threadNum];
+    int threadVecSize{static_cast<int>(std::ceil(static_cast<double>(height) / threadNum))};
+
+    for (size_t i{0}; i < (threadNum - 1); ++i)
+    {
+        threads[i] = std::move(std::thread(threadFunc, std::ref(fractal), std::ref(win), std::ref(vec[i]), i * threadVecSize, threadVecSize));
+    }
+    threads[threadNum - 1] = std::move(std::thread(threadFunc, std::ref(fractal), std::ref(win), std::ref(vec[threadNum - 1]),
+                                                   (threadNum - 1) * threadVecSize, (height - (threadNum - 1) * threadVecSize)));
+
+    for (auto &thr : threads)
+    {
+        thr.join();
+    }    
+    
+    for (size_t i{0}; i < (threadNum - 1); ++i)
+    {
+        win.drawWindow(vec[i], i * threadVecSize, threadVecSize);
+    }
+    win.drawWindow(vec[threadNum - 1], (threadNum - 1) * threadVecSize, (height - (threadNum - 1) * threadVecSize));
 }
 
 int main()
@@ -16,28 +41,10 @@ int main()
         const int winWidth{win.getWidth()};
         const int winHeight{win.getHeight()};
         Mandelbrot mand{winWidth, winHeight, 500};
+        Julia jul{winWidth, winHeight, 500};
 
-        constexpr int threadNum{8};
-        std::thread threads[threadNum];
-        std::vector<Fractal::Color> vec[threadNum]{};
-        int threadVecSize{static_cast<int>(std::ceil(static_cast<double>(winHeight) / threadNum))};
-        for (size_t i{0}; i < (threadNum - 1); ++i)
-        {
-            threads[i] = std::move(std::thread(threadFunc, std::ref(mand), std::ref(win), std::ref(vec[i]), i * threadVecSize, threadVecSize));
-        }
-        threads[threadNum - 1] = std::move(std::thread(threadFunc, std::ref(mand), std::ref(win), std::ref(vec[threadNum - 1]),
-                                                       (threadNum - 1) * threadVecSize, (winHeight - (threadNum - 1) * threadVecSize)));
-
-        for (auto &thr : threads)
-        {
-            thr.join();
-        }
-
-        for (size_t i{0}; i < (threadNum - 1); ++i)
-        {
-            win.drawWindow(vec[i], i * threadVecSize, threadVecSize);
-        }
-        win.drawWindow(vec[threadNum - 1], (threadNum - 1) * threadVecSize, (winHeight - (threadNum - 1) * threadVecSize));
+        std::array<std::vector<Fractal::Color>, threadNum> vec{};
+        runDrawThreads(std::ref(jul), std::ref(win), std::ref(vec), winWidth, winHeight);
 
         bool quit{false};
         while (!quit)

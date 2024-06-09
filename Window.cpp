@@ -27,13 +27,13 @@ void Window::destroyWindow()
     SDL_Quit();
 }
 
-void Window::calculateWindow(Mandelbrot &mand, std::vector<Fractal::Color> &screen, int h_start, int height)
+void Window::calculateWindow(Fractal &fractal, std::vector<Fractal::Color> &screen, int h_start, int height)
 {
     for (int y{h_start}; y < (h_start + height); ++y)
     {
         for (int x{0}; x < this->screen_width; ++x)
         {
-            screen.push_back(mand.calculateColor(x, y));
+            screen.push_back(fractal.calculateColor(x, y));
         }
     }
 };
