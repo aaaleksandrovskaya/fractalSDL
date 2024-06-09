@@ -2,6 +2,8 @@
 #define WINDOW_HPP
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <thread>
+#include <algorithm>
 #include <array>
 #include "Fractal.hpp"
 #include "Mandelbrot.hpp"
@@ -25,6 +27,7 @@ public:
     void calculateWindow(Fractal &fractal, std::vector<Fractal::Color> &screen, int h_start, int height);
     void drawWindow(const std::vector<Fractal::Color> &screen, int h_start, int height);
     bool processKey();
+    static constexpr int threadNum{8};
 
 private:
     int screen_width{};
@@ -36,7 +39,8 @@ private:
     enum fractalNum
     {
         MandelbrotNumber,
-        JuliaNumber
+        JuliaNumber,
+        LastNumber
     };
 
     void createWindow();

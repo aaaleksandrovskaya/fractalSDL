@@ -1,5 +1,38 @@
 #include "Window.hpp"
 
+void threadFunc(Fractal &fractal, Window &win, std::vector<Fractal::Color> &vec, int h_start, int height)
+{
+    win.calculateWindow(fractal, vec, h_start, height);
+}
+
+void runDrawThreads(Fractal &fractal, Window &win, std::array<std::vector<Fractal::Color>, Window::threadNum> &vec, const int width, const int height)
+{
+    /*Fractal *fractal{nullptr};
+    Mandelbrot mand{width, height, 500};
+    Julia fractal{width, height, 50};*/
+
+    std::thread threads[Window::threadNum];
+    int threadVecSize{static_cast<int>(std::ceil(static_cast<double>(height) / Window::threadNum))};
+
+    for (size_t i{0}; i < (Window::threadNum - 1); ++i)
+    {
+        threads[i] = std::move(std::thread(threadFunc, std::ref(fractal), std::ref(win), std::ref(vec[i]), i * threadVecSize, threadVecSize));
+    }
+    threads[Window::threadNum - 1] = std::move(std::thread(threadFunc, std::ref(fractal), std::ref(win), std::ref(vec[Window::threadNum - 1]),
+                                                           (Window::threadNum - 1) * threadVecSize, (height - (Window::threadNum - 1) * threadVecSize)));
+
+    for (auto &thr : threads)
+    {
+        thr.join();
+    }
+
+    for (size_t i{0}; i < (Window::threadNum - 1); ++i)
+    {
+        win.drawWindow(vec[i], i * threadVecSize, threadVecSize);
+    }
+    win.drawWindow(vec[Window::threadNum - 1], (Window::threadNum - 1) * threadVecSize, (height - (Window::threadNum - 1) * threadVecSize));
+}
+
 void Window::createWindow()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -36,7 +69,7 @@ void Window::calculateWindow(Fractal &fractal, std::vector<Fractal::Color> &scre
             screen.push_back(fractal.calculateColor(x, y));
         }
     }
-};
+}
 
 void Window::drawWindow(const std::vector<Fractal::Color> &screen, int h_start, int height)
 {
@@ -62,6 +95,8 @@ bool Window::processKey()
         }
         else if (e.type == SDL_KEYDOWN)
         {
+            std::array<std::vector<Fractal::Color>, Window::threadNum> vec{};
+            Fractal *fractal{nullptr};
             switch (e.key.keysym.sym)
             {
             case SDLK_UP:
@@ -73,12 +108,20 @@ bool Window::processKey()
                 break;
 
             case SDLK_LEFT:
-                std::cout << "LEFT button\n";
+            {
+                std::cout << "Julia fractal\n";
+                Julia fractal{screen_width, screen_height, 50};
+                runDrawThreads(fractal, std::ref(*this), std::ref(vec), screen_width, screen_height);
                 break;
+            }
 
             case SDLK_RIGHT:
-                std::cout << "RIGHT button\n";
+            {
+                std::cout << "Mandelbrot fractal\n";
+                Mandelbrot fractal{screen_width, screen_height, 500};
+                runDrawThreads(fractal, std::ref(*this), std::ref(vec), screen_width, screen_height);
                 break;
+            }
 
             default:
                 std::cout << "Another button\n";
