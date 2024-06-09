@@ -4,6 +4,7 @@
 #include <iostream>
 #include <array>
 #include "Fractal.hpp"
+#include "Mandelbrot.hpp"
 
 class Window
 {
@@ -20,8 +21,8 @@ public:
 
     const int getWidth() { return screen_width; };
     const int getHeight() { return screen_height; };
-    void calculateWindow(Mandelbrot &mand, std::vector<Mandelbrot::Color> &screen, int h_start, int height);
-    void drawWindow(const std::vector<Mandelbrot::Color> &screen, int h_start, int height);
+    void calculateWindow(Mandelbrot &mand, std::vector<Fractal::Color> &screen, int h_start, int height);
+    void drawWindow(const std::vector<Fractal::Color> &screen, int h_start, int height);
     bool processKey();
 
 private:

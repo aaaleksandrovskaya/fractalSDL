@@ -3,14 +3,13 @@
 #include <algorithm>
 #include "Window.hpp"
 
-void threadFunc(Mandelbrot &mand, Window &win, std::vector<Mandelbrot::Color> &vec, int h_start, int height)
+void threadFunc(Mandelbrot &mand, Window &win, std::vector<Fractal::Color> &vec, int h_start, int height)
 {
     win.calculateWindow(mand, vec, h_start, height);
 }
 
 int main()
 {
-
     try
     {
         Window win{};
@@ -20,7 +19,7 @@ int main()
 
         constexpr int threadNum{8};
         std::thread threads[threadNum];
-        std::vector<Mandelbrot::Color> vec[threadNum]{};
+        std::vector<Fractal::Color> vec[threadNum]{};
         int threadVecSize{static_cast<int>(std::ceil(static_cast<double>(winHeight) / threadNum))};
         for (size_t i{0}; i < (threadNum - 1); ++i)
         {
