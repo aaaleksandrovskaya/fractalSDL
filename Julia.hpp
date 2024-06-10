@@ -1,6 +1,5 @@
 #ifndef JULIA_HPP
 #define JULIA_HPP
-#include <complex>
 #include "Fractal.hpp"
 
 class Julia : public Fractal

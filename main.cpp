@@ -6,13 +6,10 @@ int main()
     try
     {
         Window win{};
-        const int winWidth{win.getWidth()};
-        const int winHeight{win.getHeight()};
-
         bool quit{false};
         while (!quit)
         {
-            quit |= win.processKey();
+            quit |= win.processWindow();
         }
     }
     catch (const char *exception)

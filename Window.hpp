@@ -1,7 +1,6 @@
 #ifndef WINDOW_HPP
 #define WINDOW_HPP
 #include <SDL2/SDL.h>
-#include <iostream>
 #include <thread>
 #include <algorithm>
 #include <array>
@@ -22,11 +21,9 @@ public:
         destroyWindow();
     };
 
-    const int getWidth() { return screen_width; };
-    const int getHeight() { return screen_height; };
     void calculateWindow(Fractal &fractal, std::vector<Fractal::Color> &screen, int h_start, int height);
     void drawWindow(const std::vector<Fractal::Color> &screen, int h_start, int height);
-    bool processKey();
+    bool processWindow();
     static constexpr int threadNum{8};
 
 private:
@@ -42,7 +39,7 @@ private:
     SDL_Window *screen_window{};
     SDL_Renderer *gRenderer{};
     fractalNum currentFractal{MandelbrotNumber};
-    Fractal* getCurrentFractal(SDL_Keycode key);
+    std::unique_ptr<Fractal> getCurrentFractal(SDL_Keycode key);
 
     void createWindow();
     void destroyWindow();

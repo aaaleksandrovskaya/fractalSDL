@@ -1,6 +1,5 @@
 #ifndef MANDELBROT_HPP
 #define MANDELBROT_HPP
-#include <complex>
 #include "Fractal.hpp"
 
 class Mandelbrot : public Fractal

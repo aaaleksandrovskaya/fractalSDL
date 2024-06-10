@@ -5,7 +5,7 @@ void threadFunc(Fractal &fractal, Window &win, std::vector<Fractal::Color> &vec,
     win.calculateWindow(fractal, vec, h_start, height);
 }
 
-void runDrawThreads(Fractal &fractal, Window &win, std::array<std::vector<Fractal::Color>, Window::threadNum> &vec, const int width, const int height)
+void runDrawThreads(Fractal &fractal, Window &win, std::array<std::vector<Fractal::Color>, Window::threadNum> &vec, const int height)
 {
     std::thread threads[Window::threadNum];
     int threadVecSize{static_cast<int>(std::ceil(static_cast<double>(height) / Window::threadNum))};
@@ -46,6 +46,9 @@ void Window::createWindow()
         gRenderer = SDL_CreateRenderer(screen_window, -1, SDL_RENDERER_ACCELERATED);
         SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
         SDL_RenderClear(gRenderer);
+
+        std::array<std::vector<Fractal::Color>, Window::threadNum> vec{};
+        runDrawThreads(*getCurrentFractal(SDLK_CAPSLOCK), std::ref(*this), std::ref(vec), screen_height);
     }
 }
 
@@ -78,7 +81,7 @@ void Window::drawWindow(const std::vector<Fractal::Color> &screen, int h_start, 
     SDL_RenderPresent(gRenderer);
 }
 
-bool Window::processKey()
+bool Window::processWindow()
 {
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0)
@@ -104,11 +107,11 @@ bool Window::processKey()
                 break;
 
             case SDLK_LEFT:
-                runDrawThreads(*getCurrentFractal(SDLK_LEFT), std::ref(*this), std::ref(vec), screen_width, screen_height);
+                runDrawThreads(*getCurrentFractal(SDLK_LEFT), std::ref(*this), std::ref(vec), screen_height);
                 break;
 
             case SDLK_RIGHT:
-                runDrawThreads(*getCurrentFractal(SDLK_RIGHT), std::ref(*this), std::ref(vec), screen_width, screen_height);
+                runDrawThreads(*getCurrentFractal(SDLK_RIGHT), std::ref(*this), std::ref(vec), screen_height);
                 break;
 
             default:
@@ -119,7 +122,7 @@ bool Window::processKey()
     }
 }
 
-Fractal *Window::getCurrentFractal(SDL_Keycode key)
+std::unique_ptr<Fractal> Window::getCurrentFractal(SDL_Keycode key)
 {
     switch (key)
     {
@@ -137,17 +140,17 @@ Fractal *Window::getCurrentFractal(SDL_Keycode key)
         break;
     }
 
-    Fractal* ptr{nullptr};
+    std::unique_ptr<Fractal> ptr{nullptr};
     switch (currentFractal)
     {
     case MandelbrotNumber:
-        ptr = new Mandelbrot{screen_width, screen_height};
+        ptr = std::make_unique<Mandelbrot>(screen_width, screen_height);
         break;
     case JuliaNumber:
-        ptr = new Julia{screen_width, screen_height};
+        ptr = std::make_unique<Julia>(screen_width, screen_height);
         break;
-    case LastNumber:
-        ptr = new Mandelbrot{screen_width, screen_height};
+    default:
+        ptr = std::make_unique<Mandelbrot>(screen_width, screen_height);
         break;
     }
     return ptr;
