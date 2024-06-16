@@ -1,4 +1,4 @@
-OBJS = main.cpp Window.cpp Window.hpp Fractal.cpp Fractal.hpp Mandelbrot.cpp Mandelbrot.hpp Julia.hpp Julia.cpp
+OBJS = main.cpp Window.cpp Window.hpp Fractal.cpp Fractal.hpp Mandelbrot.cpp Mandelbrot.hpp Julia.hpp Julia.cpp Newton.hpp Newton.cpp
 CC = g++
 COMPILER_FLAGS = -w -std=c++17
 LINKER_FLAGS = -lSDL2

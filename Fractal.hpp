@@ -5,6 +5,7 @@
 #include <iostream>
 #include <complex>
 
+// Родительский класс для фракталов
 class Fractal
 {
 public:
@@ -26,6 +27,7 @@ public:
     Color calculateColor(int x, int y);
 
 protected:
+    // Параметры фрактала
     int iterLimit{};
     double x_start{};
     double x_stop{};
@@ -34,10 +36,14 @@ protected:
     double dx{};
     double dy{};
 
-    constexpr static int colorTableSize{20};
-    Color colorTable[colorTableSize]{};
+    // Определение значения функции фрактала, определяемое индивидуально для каждого типа фрактала
     virtual int calculateValue(std::complex<double> complex) = 0;
 
+    // Параметры окрашивания фрактала
+    constexpr static int colorTableSize{20};
+    Color colorTable[colorTableSize]{};
+
+    // Параметры окна для отрисовки фрактала
     int width{};
     int height{};
 

@@ -1,5 +1,6 @@
 #include "Julia.hpp"
 
+// Определение значения функции множества Жюлиа
 int Julia::calculateValue(std::complex<double> complex)
 {
     std::complex z{complex};

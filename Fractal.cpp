@@ -1,5 +1,6 @@
 #include "Fractal.hpp"
 
+// Создание таблицы рандомных цветов для отрисовки фракталов
 void Fractal::setColorTable()
 {
     std::random_device rd{};
@@ -16,6 +17,7 @@ void Fractal::setColorTable()
     }
 }
 
+// Определение цвета пикселя, исходя из значения функции фрактала
 Fractal::Color Fractal::calculateColor(int x, int y)
 {
     std::complex complex{x_start + x * dx, y_stop - y * dy};
@@ -23,6 +25,7 @@ Fractal::Color Fractal::calculateColor(int x, int y)
     return colorTable[static_cast<size_t>(colorIdx)];
 }
 
+// Перегрузка оператора вывода цвета
 std::ostream &operator<<(std::ostream &out, const Fractal::Color &color)
 {
     out << color.red << ' ' << color.green << ' ' << color.blue;

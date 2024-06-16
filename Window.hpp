@@ -7,7 +7,9 @@
 #include "Fractal.hpp"
 #include "Mandelbrot.hpp"
 #include "Julia.hpp"
+#include "Newton.hpp"
 
+// Класс окна SDL
 class Window
 {
 public:
@@ -24,20 +26,24 @@ public:
     void calculateWindow(Fractal &fractal, std::vector<Fractal::Color> &screen, int h_start, int height);
     void drawWindow(const std::vector<Fractal::Color> &screen, int h_start, int height);
     bool processWindow();
-    static constexpr int threadNum{8};
 
 private:
+    // Перечисление доступных типов фракталов
     enum fractalNum
     {
         MandelbrotNumber,
         JuliaNumber,
+        NewtonNumber,
         LastNumber
     };
 
+    // Параметры окна SDL
     int screen_width{};
     int screen_height{};
     SDL_Window *screen_window{};
     SDL_Renderer *gRenderer{};
+
+    // Определение фрактала, который необходимо будет отрисовать
     fractalNum currentFractal{MandelbrotNumber};
     std::unique_ptr<Fractal> getCurrentFractal(SDL_Keycode key);
 

@@ -1,34 +1,44 @@
 #include "Window.hpp"
 
+// Количество потоков для определения цветов пикселей фрактала
+static constexpr int threadNum{8};
+
+// Функция, вызываемая в каждом потоке
 void threadFunc(Fractal &fractal, Window &win, std::vector<Fractal::Color> &vec, int h_start, int height)
 {
     win.calculateWindow(fractal, vec, h_start, height);
 }
 
-void runDrawThreads(Fractal &fractal, Window &win, std::array<std::vector<Fractal::Color>, Window::threadNum> &vec, const int height)
+// Создание threadNum потоков для определения цветов пикселей
+// Отрисовка этих пикселей (в основном потоке)
+void runDrawThreads(Fractal &fractal, Window &win, std::array<std::vector<Fractal::Color>, threadNum> &vec, const int height)
 {
-    std::thread threads[Window::threadNum];
-    int threadVecSize{static_cast<int>(std::ceil(static_cast<double>(height) / Window::threadNum))};
+    // Создание threadNum потоков для определения цветов пикселей
+    std::thread threads[threadNum];
+    int threadVecSize{static_cast<int>(std::ceil(static_cast<double>(height) / threadNum))};
 
-    for (size_t i{0}; i < (Window::threadNum - 1); ++i)
+    for (size_t i{0}; i < (threadNum - 1); ++i)
     {
         threads[i] = std::move(std::thread(threadFunc, std::ref(fractal), std::ref(win), std::ref(vec[i]), i * threadVecSize, threadVecSize));
     }
-    threads[Window::threadNum - 1] = std::move(std::thread(threadFunc, std::ref(fractal), std::ref(win), std::ref(vec[Window::threadNum - 1]),
-                                                           (Window::threadNum - 1) * threadVecSize, (height - (Window::threadNum - 1) * threadVecSize)));
+    threads[threadNum - 1] = std::move(std::thread(threadFunc, std::ref(fractal), std::ref(win), std::ref(vec[threadNum - 1]),
+                                                           (threadNum - 1) * threadVecSize, (height - (threadNum - 1) * threadVecSize)));
 
+    // Ожидание завершения работы потоков
     for (auto &thr : threads)
     {
         thr.join();
     }
 
-    for (size_t i{0}; i < (Window::threadNum - 1); ++i)
+    // Отрисовка вычисленных значений пикселей
+    for (size_t i{0}; i < (threadNum - 1); ++i)
     {
         win.drawWindow(vec[i], i * threadVecSize, threadVecSize);
     }
-    win.drawWindow(vec[Window::threadNum - 1], (Window::threadNum - 1) * threadVecSize, (height - (Window::threadNum - 1) * threadVecSize));
+    win.drawWindow(vec[threadNum - 1], (threadNum - 1) * threadVecSize, (height - (threadNum - 1) * threadVecSize));
 }
 
+// Создание окна SDL и запуск потоков для отрисовки фрактала по умолчанию
 void Window::createWindow()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -47,11 +57,12 @@ void Window::createWindow()
         SDL_SetRenderDrawColor(gRenderer, 255, 255, 255, 255);
         SDL_RenderClear(gRenderer);
 
-        std::array<std::vector<Fractal::Color>, Window::threadNum> vec{};
+        std::array<std::vector<Fractal::Color>, threadNum> vec{};
         runDrawThreads(*getCurrentFractal(SDLK_CAPSLOCK), std::ref(*this), std::ref(vec), screen_height);
     }
 }
 
+// Уничтожение окна SDL
 void Window::destroyWindow()
 {
     SDL_DestroyRenderer(gRenderer);
@@ -59,6 +70,7 @@ void Window::destroyWindow()
     SDL_Quit();
 }
 
+// Функция определения цветов пикселей для height строчек изображения, начиная с h_start
 void Window::calculateWindow(Fractal &fractal, std::vector<Fractal::Color> &screen, int h_start, int height)
 {
     for (int y{h_start}; y < (h_start + height); ++y)
@@ -70,6 +82,7 @@ void Window::calculateWindow(Fractal &fractal, std::vector<Fractal::Color> &scre
     }
 }
 
+// Функция отрисовки height строчек изображения, начиная с h_start
 void Window::drawWindow(const std::vector<Fractal::Color> &screen, int h_start, int height)
 {
     for (size_t idx{0}; idx < (this->screen_width * height); ++idx)
@@ -81,6 +94,7 @@ void Window::drawWindow(const std::vector<Fractal::Color> &screen, int h_start, 
     SDL_RenderPresent(gRenderer);
 }
 
+// Функция, осуществляющая смену отображаемого фрактала по нажатию стрелок вправо/влево и выход по нажатию кнопки выход
 bool Window::processWindow()
 {
     SDL_Event e;
@@ -88,24 +102,15 @@ bool Window::processWindow()
     {
         if (e.type == SDL_QUIT)
         {
-            std::cout << "QUIT button\n";
             return true;
             break;
         }
         else if (e.type == SDL_KEYDOWN)
         {
-            std::array<std::vector<Fractal::Color>, Window::threadNum> vec{};
+            std::array<std::vector<Fractal::Color>, threadNum> vec{};
             Fractal *fractal{nullptr};
             switch (e.key.keysym.sym)
             {
-            case SDLK_UP:
-                std::cout << "UP button\n";
-                break;
-
-            case SDLK_DOWN:
-                std::cout << "DOWN button\n";
-                break;
-
             case SDLK_LEFT:
                 runDrawThreads(*getCurrentFractal(SDLK_LEFT), std::ref(*this), std::ref(vec), screen_height);
                 break;
@@ -122,6 +127,7 @@ bool Window::processWindow()
     }
 }
 
+// Функция, возвращающая указатель на фрактал, который нужно будет отрисовать после нажатия на клавишу key
 std::unique_ptr<Fractal> Window::getCurrentFractal(SDL_Keycode key)
 {
     switch (key)
@@ -148,6 +154,9 @@ std::unique_ptr<Fractal> Window::getCurrentFractal(SDL_Keycode key)
         break;
     case JuliaNumber:
         ptr = std::make_unique<Julia>(screen_width, screen_height);
+        break;
+    case NewtonNumber:
+        ptr = std::make_unique<Newton>(screen_width, screen_height);
         break;
     default:
         ptr = std::make_unique<Mandelbrot>(screen_width, screen_height);

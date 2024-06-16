@@ -1,5 +1,6 @@
 #include "Mandelbrot.hpp"
 
+// Определение значения функции множества Мандельброта
 int Mandelbrot::calculateValue(std::complex<double> complex)
 {
     std::complex z{complex};

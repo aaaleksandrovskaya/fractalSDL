@@ -2,6 +2,7 @@
 #define JULIA_HPP
 #include "Fractal.hpp"
 
+// Дочерний класс множества Жюлиа
 class Julia : public Fractal
 {
 public:

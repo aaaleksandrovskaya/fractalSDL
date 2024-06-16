@@ -2,6 +2,7 @@
 #define MANDELBROT_HPP
 #include "Fractal.hpp"
 
+// Дочерний класс множества Мандельброта
 class Mandelbrot : public Fractal
 {
 public:
