@@ -24,6 +24,8 @@ public:
         setColorTable();
     }
 
+    virtual ~Fractal(){}
+
     Color calculateColor(int x, int y);
 
 protected:
