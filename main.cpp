@@ -12,9 +12,9 @@ int main()
             quit |= win.processWindow();
         }
     }
-    catch (const char *exception)
+    catch (const std::exception& exception)
     {
-        std::cerr << "Error: " << exception << '\n';
+        std::cerr << "Error: " << exception.what() << '\n';
     }
 
     return 0;

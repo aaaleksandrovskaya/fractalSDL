@@ -4,6 +4,7 @@
 #include <thread>
 #include <algorithm>
 #include <array>
+#include <exception>
 #include "Fractal.hpp"
 #include "Mandelbrot.hpp"
 #include "Julia.hpp"
